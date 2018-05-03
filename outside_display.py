@@ -404,9 +404,9 @@ class Jarvis:
 		
 		def update_localtime():
 			localtime = datetime.today()
-			
-		t = Timer(1.0, hello)
-		t.start()
+			self.Label2.configure(text = localtime)
+			t = Timer(1.0, update_localtime)
+			t.start()
 
 		self.Button1_3 = Button(top)
 		self.Button1_3.place(relx=0.5, rely=0.68, height=93, width=225)
