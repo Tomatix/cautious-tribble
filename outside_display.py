@@ -1,6 +1,7 @@
 from threading import Timer
-import sys
 import time
+import sys
+from time import sleep
 
 try:
     from Tkinter import *
@@ -60,7 +61,7 @@ class Jarvis:
 			"-slant roman -underline 0 -overstrike 0"
 		font15 = "-family {Times New Roman} -size 20 -weight bold "  \
 			"-slant roman -underline 0 -overstrike 0"
-		font9 = "-family {Segoe UI} -size 9 -weight normal -slant "  \
+		font9 = "-family {Times New Roman} -size 17 -weight normal -slant "  \
 			"roman -underline 0 -overstrike 0"
 
 		top.geometry("948x677")
@@ -390,12 +391,12 @@ class Jarvis:
 		self.Label1.configure(width=242)
 
 		self.Label2 = Label(top)
-		self.Label2.place(relx=0, rely=0.84, height=46, width=232)
+		self.Label2.place(relx=0, rely=0.84, height=46, width=250)#232
 		self.Label2.configure(activebackground="#f9f9f9")
 		self.Label2.configure(activeforeground="#c6c6c6")
 		self.Label2.configure(background="#2b287a")
 		self.Label2.configure(disabledforeground="#a3a3a3")
-		self.Label2.configure(font=font15)
+		self.Label2.configure(font=font9)#font15
 		self.Label2.configure(foreground="white")
 		self.Label2.configure(highlightbackground="#d9d9d9")
 		self.Label2.configure(highlightcolor="black")
@@ -403,10 +404,12 @@ class Jarvis:
 		self.Label2.configure(width=232)
 		
 		def update_localtime():
-			localtime = datetime.today()
+			localtime = time.ctime(time.time())
 			self.Label2.configure(text = localtime)
 			t = Timer(1.0, update_localtime)
-			t.start()
+			
+		t = Timer(0, update_localtime)
+		t.start()
 
 		self.Button1_3 = Button(top)
 		self.Button1_3.place(relx=0.5, rely=0.68, height=93, width=225)
@@ -445,4 +448,5 @@ class Jarvis:
 
 if __name__ == '__main__':
     vp_start_gui()
+
 
