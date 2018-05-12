@@ -3,13 +3,13 @@ import os
 from Tkinter import *
 from picamera import PiCamera
 
-import RPi.GPIO as GPIO
-import time
+#import RPi.GPIO as GPIO
+#import time
 
-GPIO.setWarnings(False)
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(17, GPIO.IN)
-GPIO.setup(22, GPIO.OUT)
+#GPIO.setWarnings(False)
+#GPIO.setmode(GPIO.BCM)
+#GPIO.setup(17, GPIO.IN)
+#GPIO.setup(22, GPIO.OUT)
 
 def start_gui():
     '''Starting point when module is the main routine.'''
