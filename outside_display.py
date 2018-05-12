@@ -1,47 +1,45 @@
-from threading import Timer
-import time
 import sys
-from time import sleep
+import RPi.GPIO as GPIO
+import pygame
+from time import *
+from Tkinter import *
 
-try:
-    from Tkinter import *
-except ImportError:
-    from tkinter import *
 
-try:
-    import ttk
-    py3 = False
-except ImportError:
-    import tkinter.ttk as ttk
-    py3 = True
+led = 4
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(led, GPIO.OUT)
 
 
 
-def vp_start_gui():
+def start_gui():
 	'''Starting point when module is the main routine.'''
 	global val, w, root
 	global localtime
 	root = Tk()
 	top = Jarvis (root)
+	App() 
 	root.mainloop()
 
 w = None
 def create_Jarvis(root, *args, **kwargs):
-    '''Starting point when module is imported by another program.'''
-    global w, w_win, rt
-    rt = root
-    w = Toplevel (root)
-    top = Jarvis (w)
-    return (w, top)
+	'''Starting point when module is imported by another program.'''
+	global w, w_win, rt
+	rt = root
+	w = Toplevel (root)
+	top = Jarvis (w)
+	return (w, top)
 
 def destroy_Jarvis():
-    global w
-    w.destroy()
-    w = None
+	global w
+	w.destroy()
+	w = None
 
 
-	
-operater = ''	
+
+
+
+wrong_pin = []	
+operater = 'Enter Passcode'	
 Star_list = ''
 
 class Jarvis:
@@ -59,25 +57,29 @@ class Jarvis:
 			"-slant roman -underline 0 -overstrike 0"
 		font14 = "-family {Times New Roman} -size 36 -weight bold "  \
 			"-slant roman -underline 0 -overstrike 0"
-		font15 = "-family {Times New Roman} -size 20 -weight bold "  \
+		font10 = "-family {Times New Roman} -size 20 -weight bold "  \
 			"-slant roman -underline 0 -overstrike 0"
-		font9 = "-family {Times New Roman} -size 17 -weight normal -slant "  \
+		font9 = "-family {Segoe UI} -size 9 -weight normal -slant "  \
 			"roman -underline 0 -overstrike 0"
 
-		top.geometry("948x677")
+		top.geometry("800x480")
 		top.title("Jarvis")
 		top.configure(background="#2b287a")
 		top.configure(highlightbackground="#d9d9d9")
 		top.configure(highlightcolor="black")
 
 		display = StringVar()
-
+		display.set(operater)
 		
-
+		# when any button is pressed it adds it to the display
 		def buttonclick(num):
 			global Star_list 
 			global operater
-			if ((operater == 'Correct') or (operater == 'Incorrect')):
+			if (operater == "Alarm"):
+				pass
+			# if correct/incorrect/Enter Passcode are on the display it clears it and adds the button that was pressed
+			# else it just adds the button pressed to the display
+			elif ((operater == 'Correct') or (operater == 'Incorrect') or (operater == 'Enter Passcode')):
 				operater = ''
 				Star_list = ''
 				Star_list += "*"
@@ -88,365 +90,186 @@ class Jarvis:
 					Star_list += "*"
 					operater = operater + str(num)
 					display.set(Star_list)
-			
+		
 		def talk():
 			pass
-			
+		
+		# when pressed checks the display for the correct passcode if correct it will change the display to correct and unlock the door
+		# else it will display incorrect 
 		def enter():
-			global Star_list
-			global operater
-			if (operater == str(12590)):
-				sleep(.5)
-				operater = 'Correct'
-				display.set(operater)
-			else:
-				sleep(.5)
-				operater = 'Incorrect'
-				display.set(operater)
-			
+					global Star_list
+					global operater
+					global wrong_pin
+					if (operater == str(12590)):
+						sleep(.5)
+						operater = 'Correct'
+						wrong_pin = []
+						display.set(operater)
+##						GPIO.output(led, GPIO.HIGH)
+##						sleep(10)
+##						GPIO.output(led, GPIO.LOW)
+					else:
+						operater = 'Incorrect'
+						wrong_pin.append('')
+						if (len(wrong_pin) >= 5):
+							operater = "Alarm"
+							display.set(operater)
+							alarm()
+						else:
+							display.set(operater)
+		
+		# when pressed the display will cleared, then set to Enter Passcode
 		def clear():
 			global operater
 			global Star_list
-			Star_list = ''
-			operater = ''
-			display.set('')
+			if (operater == "Alarm"):
+				pass
+			else:
+				Star_list = ''
+				operater = ''
+				display.set('Enter Passcode')
 
 		def ring_bell():
-			pass
-
-		
-
-		self.Button1_0 = Button(top)
-		self.Button1_0.place(relx=0.01, rely=0.24, height=93, width=225)
-		self.Button1_0.configure(activebackground="#6ec6d8")
-		self.Button1_0.configure(activeforeground="#000000")
-		self.Button1_0.configure(background="#d9d9d9")
-		self.Button1_0.configure(borderwidth="15")
-		self.Button1_0.configure(command=lambda:buttonclick(1))
-		self.Button1_0.configure(cursor="hand2")
-		self.Button1_0.configure(disabledforeground="#a3a3a3")
-		self.Button1_0.configure(font=font14)
-		self.Button1_0.configure(foreground="#000000")
-		self.Button1_0.configure(highlightbackground="#d9d9d9")
-		self.Button1_0.configure(highlightcolor="black")
-		self.Button1_0.configure(pady="0")
-		self.Button1_0.configure(takefocus="Tab")
-		self.Button1_0.configure(text='''1''')
-
-		self.menubar = Menu(top,font=font9,bg=_bgcolor,fg=_fgcolor)
-		top.configure(menu = self.menubar)
-
-
-
-		self.Button1_1 = Button(top)
-		self.Button1_1.place(relx=0.25, rely=0.24, height=93, width=225)
-		self.Button1_1.configure(activebackground="#4cd8d8")
-		self.Button1_1.configure(activeforeground="#000000")
-		self.Button1_1.configure(background="#d9d9d9")
-		self.Button1_1.configure(borderwidth="15")
-		self.Button1_1.configure(command=lambda:buttonclick(2))
-		self.Button1_1.configure(cursor="hand2")
-		self.Button1_1.configure(disabledforeground="#a3a3a3")
-		self.Button1_1.configure(font=font14)
-		self.Button1_1.configure(foreground="#000000")
-		self.Button1_1.configure(highlightbackground="#d9d9d9")
-		self.Button1_1.configure(highlightcolor="black")
-		self.Button1_1.configure(pady="0")
-		self.Button1_1.configure(takefocus="Tab")
-		self.Button1_1.configure(text='''2''')
-
-		self.Button1_2 = Button(top)
-		self.Button1_2.place(relx=0.5, rely=0.24, height=93, width=225)
-		self.Button1_2.configure(activebackground="#6ec6d8")
-		self.Button1_2.configure(activeforeground="#000000")
-		self.Button1_2.configure(background="#d9d9d9")
-		self.Button1_2.configure(borderwidth="15")
-		self.Button1_2.configure(command=lambda:buttonclick(3))
-		self.Button1_2.configure(cursor="hand2")
-		self.Button1_2.configure(disabledforeground="#a3a3a3")
-		self.Button1_2.configure(font=font14)
-		self.Button1_2.configure(foreground="#000000")
-		self.Button1_2.configure(highlightbackground="#d9d9d9")
-		self.Button1_2.configure(highlightcolor="black")
-		self.Button1_2.configure(pady="0")
-		self.Button1_2.configure(takefocus="Tab")
-		self.Button1_2.configure(text='''3''')
-
-		self.Button1_3 = Button(top)
-		self.Button1_3.place(relx=0.01, rely=0.38, height=93, width=225)
-		self.Button1_3.configure(activebackground="#6ec6d8")
-		self.Button1_3.configure(activeforeground="#000000")
-		self.Button1_3.configure(background="#d9d9d9")
-		self.Button1_3.configure(borderwidth="15")
-		self.Button1_3.configure(command=lambda:buttonclick(4))
-		self.Button1_3.configure(cursor="hand2")
-		self.Button1_3.configure(disabledforeground="#a3a3a3")
-		self.Button1_3.configure(font=font14)
-		self.Button1_3.configure(foreground="#000000")
-		self.Button1_3.configure(highlightbackground="#d9d9d9")
-		self.Button1_3.configure(highlightcolor="black")
-		self.Button1_3.configure(pady="0")
-		self.Button1_3.configure(takefocus="Tab")
-		self.Button1_3.configure(text='''4''')
-
-		self.Button1_4 = Button(top)
-		self.Button1_4.place(relx=0.25, rely=0.38, height=93, width=225)
-		self.Button1_4.configure(activebackground="#6ec6d8")
-		self.Button1_4.configure(activeforeground="#000000")
-		self.Button1_4.configure(background="#d9d9d9")
-		self.Button1_4.configure(borderwidth="15")
-		self.Button1_4.configure(command=lambda:buttonclick(5))
-		self.Button1_4.configure(cursor="hand2")
-		self.Button1_4.configure(disabledforeground="#a3a3a3")
-		self.Button1_4.configure(font=font14)
-		self.Button1_4.configure(foreground="#000000")
-		self.Button1_4.configure(highlightbackground="#d9d9d9")
-		self.Button1_4.configure(highlightcolor="black")
-		self.Button1_4.configure(pady="0")
-		self.Button1_4.configure(takefocus="Tab")
-		self.Button1_4.configure(text='''5''')
-
-		self.Button1_5 = Button(top)
-		self.Button1_5.place(relx=0.5, rely=0.38, height=93, width=225)
-		self.Button1_5.configure(activebackground="#6ec6d8")
-		self.Button1_5.configure(activeforeground="#000000")
-		self.Button1_5.configure(background="#d9d9d9")
-		self.Button1_5.configure(borderwidth="15")
-		self.Button1_5.configure(command=lambda:buttonclick(6))
-		self.Button1_5.configure(cursor="hand2")
-		self.Button1_5.configure(disabledforeground="#a3a3a3")
-		self.Button1_5.configure(font=font14)
-		self.Button1_5.configure(foreground="#000000")
-		self.Button1_5.configure(highlightbackground="#d9d9d9")
-		self.Button1_5.configure(highlightcolor="black")
-		self.Button1_5.configure(pady="0")
-		self.Button1_5.configure(takefocus="Tab")
-		self.Button1_5.configure(text='''6''')
-
-		self.Button1_6 = Button(top)
-		self.Button1_6.place(relx=0.01, rely=0.53, height=93, width=225)
-		self.Button1_6.configure(activebackground="#6ec6d8")
-		self.Button1_6.configure(activeforeground="#000000")
-		self.Button1_6.configure(background="#d9d9d9")
-		self.Button1_6.configure(borderwidth="15")
-		self.Button1_6.configure(command=lambda:buttonclick(7))
-		self.Button1_6.configure(cursor="hand2")
-		self.Button1_6.configure(disabledforeground="#a3a3a3")
-		self.Button1_6.configure(font=font14)
-		self.Button1_6.configure(foreground="#000000")
-		self.Button1_6.configure(highlightbackground="#d9d9d9")
-		self.Button1_6.configure(highlightcolor="black")
-		self.Button1_6.configure(pady="0")
-		self.Button1_6.configure(takefocus="Tab")
-		self.Button1_6.configure(text='''7''')
-
-		self.Button1_7 = Button(top)
-		self.Button1_7.place(relx=0.25, rely=0.53, height=93, width=225)
-		self.Button1_7.configure(activebackground="#6ec6d8")
-		self.Button1_7.configure(activeforeground="#000000")
-		self.Button1_7.configure(background="#d9d9d9")
-		self.Button1_7.configure(borderwidth="15")
-		self.Button1_7.configure(command=lambda:buttonclick(8))
-		self.Button1_7.configure(cursor="hand2")
-		self.Button1_7.configure(disabledforeground="#a3a3a3")
-		self.Button1_7.configure(font=font14)
-		self.Button1_7.configure(foreground="#000000")
-		self.Button1_7.configure(highlightbackground="#d9d9d9")
-		self.Button1_7.configure(highlightcolor="black")
-		self.Button1_7.configure(pady="0")
-		self.Button1_7.configure(takefocus="Tab")
-		self.Button1_7.configure(text='''8''')
-
-		self.Button1_8 = Button(top)
-		self.Button1_8.place(relx=0.5, rely=0.53, height=93, width=225)
-		self.Button1_8.configure(activebackground="#6ec6d8")
-		self.Button1_8.configure(activeforeground="#000000")
-		self.Button1_8.configure(background="#d9d9d9")
-		self.Button1_8.configure(borderwidth="15")
-		self.Button1_8.configure(command=lambda:buttonclick(9))
-		self.Button1_8.configure(cursor="hand2")
-		self.Button1_8.configure(disabledforeground="#a3a3a3")
-		self.Button1_8.configure(font=font14)
-		self.Button1_8.configure(foreground="#000000")
-		self.Button1_8.configure(highlightbackground="#d9d9d9")
-		self.Button1_8.configure(highlightcolor="black")
-		self.Button1_8.configure(pady="0")
-		self.Button1_8.configure(takefocus="Tab")
-		self.Button1_8.configure(text='''9''')
-
-		self.Button1_9 = Button(top)
-		self.Button1_9.place(relx=0.74, rely=0.68, height=93, width=225)
-		self.Button1_9.configure(activebackground="#6ec6d8")
-		self.Button1_9.configure(activeforeground="#000000")
-		self.Button1_9.configure(background="#ff0a0a")
-		self.Button1_9.configure(borderwidth="15")
-		self.Button1_9.configure(command=lambda:clear())
-		self.Button1_9.configure(cursor="hand2")
-		self.Button1_9.configure(disabledforeground="#a3a3a3")
-		self.Button1_9.configure(font=font14)
-		self.Button1_9.configure(foreground="black")
-		self.Button1_9.configure(highlightbackground="#d9d9d9")
-		self.Button1_9.configure(highlightcolor="black")
-		self.Button1_9.configure(pady="0")
-		self.Button1_9.configure(takefocus="Tab")
-		self.Button1_9.configure(text='''Clear''')
-
-		self.Button1_10 = Button(top)
-		self.Button1_10.place(relx=0.25, rely=0.68, height=93, width=225)
-		self.Button1_10.configure(activebackground="#6ec6d8")
-		self.Button1_10.configure(activeforeground="#000000")
-		self.Button1_10.configure(background="#d9d9d9")
-		self.Button1_10.configure(borderwidth="15")
-		self.Button1_10.configure(command=lambda:buttonclick(0))
-		self.Button1_10.configure(cursor="hand2")
-		self.Button1_10.configure(disabledforeground="#a3a3a3")
-		self.Button1_10.configure(font=font14)
-		self.Button1_10.configure(foreground="#000000")
-		self.Button1_10.configure(highlightbackground="#d9d9d9")
-		self.Button1_10.configure(highlightcolor="black")
-		self.Button1_10.configure(pady="0")
-		self.Button1_10.configure(takefocus="Tab")
-		self.Button1_10.configure(text='''0''')
-
-		self.Button1_11 = Button(top)
-		self.Button1_11.place(relx=0.74, rely=0.53, height=93, width=225)
-		self.Button1_11.configure(activebackground="#6ec6d8")
-		self.Button1_11.configure(activeforeground="#000000")
-		self.Button1_11.configure(background="#23d83b")
-		self.Button1_11.configure(borderwidth="15")
-		self.Button1_11.configure(command=lambda:enter())
-		self.Button1_11.configure(cursor="hand2")
-		self.Button1_11.configure(disabledforeground="#a3a3a3")
-		self.Button1_11.configure(font=font14)
-		self.Button1_11.configure(foreground="black")
-		self.Button1_11.configure(highlightbackground="#d9d9d9")
-		self.Button1_11.configure(highlightcolor="black")
-		self.Button1_11.configure(pady="0")
-		self.Button1_11.configure(takefocus="Tab")
-		self.Button1_11.configure(text='''Enter''')
-
-		self.Button1_12 = Button(top)
-		self.Button1_12.place(relx=0.74, rely=0.24, height=93, width=225)
-		self.Button1_12.configure(activebackground="#a32227")
-		self.Button1_12.configure(activeforeground="white")
-		self.Button1_12.configure(activeforeground="#000000")
-		self.Button1_12.configure(background="orange")
-		self.Button1_12.configure(borderwidth="15")
-		self.Button1_12.configure(command=lambda:talk())
-		self.Button1_12.configure(cursor="hand2")
-		self.Button1_12.configure(disabledforeground="#a3a3a3")
-		self.Button1_12.configure(font=font14)
-		self.Button1_12.configure(foreground="black")
-		self.Button1_12.configure(highlightbackground="#d9d9d9")
-		self.Button1_12.configure(highlightcolor="black")
-		self.Button1_12.configure(pady="0")
-		self.Button1_12.configure(takefocus="Tab")
-		self.Button1_12.configure(text='''Talk''')
-
-		self.Button1_13 = Button(top)
-		self.Button1_13.place(relx=0.74, rely=0.38, height=93, width=225)
-		self.Button1_13.configure(activebackground="#2c34a3")
-		self.Button1_13.configure(activeforeground="white")
-		self.Button1_13.configure(activeforeground="#000000")
-		self.Button1_13.configure(background="#4cd8d8")
-		self.Button1_13.configure(borderwidth="15")
-		self.Button1_13.configure(command=lambda:ring_bell())
-		self.Button1_13.configure(cursor="hand2")
-		self.Button1_13.configure(disabledforeground="#a3a3a3")
-		self.Button1_13.configure(font=font14)
-		self.Button1_13.configure(foreground="black")
-		self.Button1_13.configure(highlightbackground="#d9d9d9")
-		self.Button1_13.configure(highlightcolor="black")
-		self.Button1_13.configure(pady="0")
-		self.Button1_13.configure(takefocus="Tab")
-		self.Button1_13.configure(text='''Ring''')
-
-		self.Entry1 = Entry(top)
-		self.Entry1.place(relx=0.22, rely=0.07,height=94, relwidth=0.29)
-		self.Entry1.configure(background="#2b287a")
-		self.Entry1.configure(borderwidth="0")
-		self.Entry1.configure(disabledforeground="#a3a3a3")
-		self.Entry1.configure(font=font12)
-		self.Entry1.configure(foreground="white")
-		self.Entry1.configure(highlightbackground="#d9d9d9")
-		self.Entry1.configure(highlightcolor="black")
-		self.Entry1.configure(insertbackground="black")
-		self.Entry1.configure(insertborderwidth="1")
-		self.Entry1.configure(justify=CENTER)
-		self.Entry1.configure(selectbackground="#007878d7d777")
-		self.Entry1.configure(selectforeground="#ffffffffffff")
-		self.Entry1.configure(textvariable=display)
-
-		self.Label1 = Label(top)
-		self.Label1.place(relx=0.33, rely=0.0, height=46, width=242)
-		self.Label1.configure(activebackground="#f9f9f9")
-		self.Label1.configure(activeforeground="#000000")
-		self.Label1.configure(background="#2b287a")
-		self.Label1.configure(disabledforeground="#a3a3a3")
-		self.Label1.configure(font=font11)
-		self.Label1.configure(foreground="#4cd8d8")
-		self.Label1.configure(highlightbackground="#d9d9d9")
-		self.Label1.configure(highlightcolor="black")
-		self.Label1.configure(text='''Welcome''')
-		self.Label1.configure(width=242)
-
-		self.Label2 = Label(top)
-		self.Label2.place(relx=0, rely=0.84, height=46, width=250)#232
-		self.Label2.configure(activebackground="#f9f9f9")
-		self.Label2.configure(activeforeground="#c6c6c6")
-		self.Label2.configure(background="#2b287a")
-		self.Label2.configure(disabledforeground="#a3a3a3")
-		self.Label2.configure(font=font9)#font15
-		self.Label2.configure(foreground="white")
-		self.Label2.configure(highlightbackground="#d9d9d9")
-		self.Label2.configure(highlightcolor="black")
-		self.Label2.configure(text= "localtime")
-		self.Label2.configure(width=232)
-		
-		def update_localtime():
-			localtime = time.ctime(time.time())
-			self.Label2.configure(text = localtime)
-			t = Timer(1.0, update_localtime)
+			pygame.init()
+			pygame.mixer.Sound("door_bell.wav").play()
 			
-		t = Timer(0, update_localtime)
-		t.start()
-
-		self.Button1_3 = Button(top)
-		self.Button1_3.place(relx=0.5, rely=0.68, height=93, width=225)
-		self.Button1_3.configure(activebackground="#6ec6d8")
-		self.Button1_3.configure(activeforeground="#000000")
-		self.Button1_3.configure(background="#d9d9d9")
-		self.Button1_3.configure(borderwidth="15")
-		self.Button1_3.configure(command=lambda:buttonclick('#'))
-		self.Button1_3.configure(cursor="hand2")
-		self.Button1_3.configure(disabledforeground="#a3a3a3")
-		self.Button1_3.configure(font=font14)
-		self.Button1_3.configure(foreground="#000000")
-		self.Button1_3.configure(highlightbackground="#d9d9d9")
-		self.Button1_3.configure(highlightcolor="black")
-		self.Button1_3.configure(pady="0")
-		self.Button1_3.configure(takefocus="Tab")
-		self.Button1_3.configure(text='''#''')
-
-		self.Button1_4 = Button(top)
-		self.Button1_4.place(relx=0.01, rely=0.68, height=93, width=225)
-		self.Button1_4.configure(activebackground="#6ec6d8")
-		self.Button1_4.configure(activeforeground="#000000")
-		self.Button1_4.configure(background="#d9d9d9")
-		self.Button1_4.configure(borderwidth="15")
-		self.Button1_4.configure(command=lambda:buttonclick('*'))
-		self.Button1_4.configure(cursor="hand2")
-		self.Button1_4.configure(disabledforeground="#a3a3a3")
-		self.Button1_4.configure(font=font14)
-		self.Button1_4.configure(foreground="#000000")
-		self.Button1_4.configure(highlightbackground="#d9d9d9")
-		self.Button1_4.configure(highlightcolor="black")
-		self.Button1_4.configure(pady="0")
-		self.Button1_4.configure(takefocus="Tab")
-		self.Button1_4.configure(text='''*''')
+			
+		def alarm():
+			pygame.init()
+			counter = 0
+			while (counter < 25):			
+				pygame.mixer.Sound("Air_Horn.wav").play()
+				sleep(.5)
+				pygame.mixer.Sound("Air_Horn.wav").play()
+				counter += 1
+				
+	
 
 
+		# creates the number 1 button
+		Button1 = Button(top)
+		# sets the button to the appropriate size and at the appropriate place
+		Button1.place(relx=0.01, rely=0.29, height=68, width=175)
+		# when pressed the button will change colors
+		Button1.configure(activebackground="#6ec6d8", background="#d9d9d9",borderwidth="10", command=lambda:buttonclick(1), cursor="hand2", font=font14, pady="0", text='''1''')
+
+		menubar = Menu(top,font=font9,bg=_bgcolor,fg=_fgcolor)
+		top.configure(menu = menubar)
+
+
+		# same as above
+		Button2 = Button(top)
+		Button2.place(relx=0.25, rely=0.29, height=68, width=175)
+		Button2.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick(2), cursor="hand2", font=font14, pady="0", text='''2''')
+		
+
+		# same as above
+		Button3 = Button(top)
+		Button3.place(relx=0.5, rely=0.29, height=68, width=175)
+		Button3.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick(3), cursor="hand2", font=font14, pady="0", text='''3''')
+		
+
+		# same as above
+		Button4 = Button(top)
+		Button4.place(relx=0.01, rely=0.46, height=68, width=175)
+		Button4.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick(4), cursor="hand2", font=font14, pady="0", text='''4''')
+
+		# same as above
+		Button5 = Button(top)
+		Button5.place(relx=0.25, rely=0.46, height=68, width=175)
+		Button5.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick(5), cursor="hand2", font=font14, pady="0", text='''5''')
+
+		# same as above
+		Button6 = Button(top)
+		Button6.place(relx=0.5, rely=0.46, height=68, width=175)
+		Button6.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick(6), cursor="hand2", font=font14, pady="0", text='''6''')
+
+		# same as above
+		Button7 = Button(top)
+		Button7.place(relx=0.01, rely=0.63, height=68, width=175)
+		Button7.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick(7), cursor="hand2", font=font14, pady="0", text='''7''')
+
+		# same as above
+		Button8 = Button(top)
+		Button8.place(relx=0.25, rely=0.63, height=68, width=175)
+		Button8.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick(8), cursor="hand2", font=font14, pady="0", text='''8''')
+
+		# same as above
+		Button9 = Button(top)
+		Button9.place(relx=0.5, rely=0.63, height=68, width=175)
+		Button9.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick(9), cursor="hand2", font=font14, pady="0", text='''9''')
+
+		# same as above
+		Clear_Button = Button(top)
+		Clear_Button.place(relx=0.74, rely=0.80, height=68, width=175)
+		Clear_Button.configure(activebackground="#6ec6d8", background="#ff0a0a", borderwidth="10", command=lambda:clear(), cursor="hand2", font=font14, pady="0", text='''Clear''')
+		
+
+		# same as above
+		Button0 = Button(top)
+		Button0.place(relx=0.25, rely=0.80, height=68, width=175)
+		Button0.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick(0), cursor="hand2", font=font14, pady="0", text='''0''')
+
+		# same as above
+		Enter_Button = Button(top)
+		Enter_Button.place(relx=0.74, rely=0.63, height=68, width=175)
+		Enter_Button.configure(activebackground="#6ec6d8", background="#23d83b", borderwidth="10", command=lambda:enter(), cursor="hand2", font=font14, pady="0", text='''Enter''')
+
+		# same as above
+		Talk_Button = Button(top)
+		Talk_Button.place(relx=0.74, rely=0.29, height=68, width=175)
+		Talk_Button.configure(activebackground="#a32227", background="orange",borderwidth="10",command=lambda:talk(), cursor="hand2", font=font14, pady="0", text='''Talk''')
+
+		# same as above
+		Ring_Button = Button(top)
+		Ring_Button.place(relx=0.74, rely=0.46, height=68, width=175)
+		Ring_Button.configure(activebackground="#2c34a3", background="#4cd8d8", borderwidth="10", command=lambda:ring_bell(), cursor="hand2", font=font14, pady="0", text='''Ring''')
+
+		# same as above
+		Entry1 = Entry(top)
+		Entry1.place(relx=0.22, rely=0.12,height=68, relwidth=0.29)
+		Entry1.configure(background="#2b287a", borderwidth="0", disabledforeground="#a3a3a3", font=font12, foreground="white", highlightbackground="#d9d9d9", highlightcolor="black", insertbackground="black", insertborderwidth="1", justify=CENTER, selectbackground="#007878d7d777", selectforeground="#ffffffffffff", textvariable=display)
+	
+
+		# same as above
+		Label1 = Label(top)
+		Label1.place(relx=0.33, rely=0.0, height=46, width=242)
+		Label1.configure(activebackground="#f9f9f9", background="#2b287a", font=font11, foreground="#4cd8d8", text='''Welcome''', width=242)
+
+
+		# same as above
+		Button_pound = Button(top)
+		Button_pound.place(relx=0.5, rely=0.80, height=68, width=175)
+		Button_pound.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick('#'), cursor="hand2", font=font14, foreground="#000000", pady="0", text='''#''')
+
+		# same as above
+		Button_star = Button(top)
+		Button_star.place(relx=0.01, rely=0.80, height=68, width=175)
+		Button_star.configure(activebackground="#6ec6d8", background="#d9d9d9", borderwidth="10", command=lambda:buttonclick('*'), cursor="hand2", font=font14, pady="0", text='''*''')
+		
+		
+
+class App():
+	def __init__(self):
+			self.root = Tk()
+			self.label = Label(text="")
+			self.label.pack()
+			self.update_clock()
+			self.root.mainloop()
+
+	def update_clock(self):
+			now = strftime("%a \n%B %d %Y\n%X" )
+			self.label.place(relx=0.82, rely=0.0, height=68, width=175)
+			self.label.configure(text=now, background="#2b287a", font = 14, foreground = 'white')
+			self.root.after(1000, self.update_clock)
+
+
+
+
+			
 if __name__ == '__main__':
-    vp_start_gui()
+	start_gui()
+
+
 
 
