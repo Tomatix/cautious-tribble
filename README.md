@@ -11,3 +11,7 @@ On the outside display, we could not get the camera to display on the gui. So, w
 
 
 Make sure Pi-Camera is intilaized if you want to do this project on your own on another pi. Native Pi-Camera support enable in settings and reboot. 
+
+Make sure you unzip the folders to the appriopriate Pi.
+
+Alarm (speaker) requires your sound to be on Analog input
